@@ -1,10 +1,8 @@
-from typing import List, Optional
-
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QComboBox, QSizePolicy, QFrame, QVBoxLayout
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QFrame, QVBoxLayout
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QFont
 
-from src.settings.core.styles import PRIMARY, PRIMARY_DARK, BORDER
+from src.settings.settings_view.styles import PRIMARY, PRIMARY_DARK, BORDER
 
 
 class TouchSpinBox(QFrame):

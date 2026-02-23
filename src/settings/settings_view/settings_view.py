@@ -5,9 +5,9 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import pyqtSignal, Qt
 
-from src.settings.core.schema import SettingGroup
-from src.settings.core.group_widget import GenericSettingGroup
-from src.settings.core.styles import TAB_WIDGET_STYLE, SAVE_BUTTON_STYLE, BG_COLOR
+from src.settings.settings_view.schema import SettingGroup
+from src.settings.settings_view.group_widget import GenericSettingGroup
+from src.settings.settings_view.styles import TAB_WIDGET_STYLE, SAVE_BUTTON_STYLE, BG_COLOR
 
 
 class SettingsView(QWidget):

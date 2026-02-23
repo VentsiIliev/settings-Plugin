@@ -5,10 +5,10 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import QFont
 
-from src.settings.core.schema import SettingGroup, SettingField
-from src.settings.core.touch_spinbox import TouchSpinBox
-from src.settings.core.int_list_widget import IntListWidget
-from src.settings.core.styles import GROUP_STYLE, LABEL_STYLE, PRIMARY, PRIMARY_DARK, BORDER
+from src.settings.settings_view.schema import SettingGroup, SettingField
+from src.settings.settings_view.touch_spinbox import TouchSpinBox
+from src.settings.settings_view.int_list_widget import IntListWidget
+from src.settings.settings_view.styles import GROUP_STYLE, LABEL_STYLE, PRIMARY, PRIMARY_DARK, BORDER
 
 
 _COMBO_STYLE = f"""

@@ -10,11 +10,11 @@ from PyQt6.QtWidgets import (
 )
 
 from src.external_dependencies.robotConfig.MovementGroup import MovementGroup
-from src.settings.core.styles import (
+from src.settings.settings_view.styles import (
     ACTION_BTN_STYLE, BG_COLOR, BORDER, GHOST_BTN_STYLE,
-    GROUP_STYLE, LABEL_STYLE, PRIMARY, PRIMARY_DARK, PRIMARY_LIGHT,
+    GROUP_STYLE, LABEL_STYLE, PRIMARY_DARK, PRIMARY_LIGHT,
 )
-from src.settings.core.touch_spinbox import TouchSpinBox
+from src.settings.settings_view.touch_spinbox import TouchSpinBox
 
 
 # ── Schema ────────────────────────────────────────────────────────────────────

@@ -1,7 +1,7 @@
 from typing import Tuple
 
-from src.settings.core.settings_view import SettingsView
-from src.settings.ui.robot_settings_tab.robot_settings_schema import (
+from src.settings.settings_view.settings_view import SettingsView
+from src.robot_settings.view.robot_settings_schema import (
     ROBOT_INFO_GROUP,
     GLOBAL_MOTION_GROUP,
     SAFETY_LIMITS_GROUP,
@@ -10,8 +10,8 @@ from src.settings.ui.robot_settings_tab.robot_settings_schema import (
     CALIBRATION_ADAPTIVE_GROUP,
     CALIBRATION_MARKER_GROUP,
 )
-from src.settings.ui.robot_settings_tab.mapper import RobotSettingsMapper
-from src.settings.ui.robot_settings_tab.movement_groups_tab import MovementGroupsTab
+from src.robot_settings.mapper import RobotSettingsMapper
+from src.robot_settings.view.movement_groups_tab import MovementGroupsTab
 
 
 def robot_tab_factory(parent=None) -> Tuple[SettingsView, MovementGroupsTab]:

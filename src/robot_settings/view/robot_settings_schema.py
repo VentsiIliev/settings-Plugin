@@ -1,4 +1,4 @@
-from src.settings.core.schema import SettingField, SettingGroup
+from src.settings.settings_view.schema import SettingField, SettingGroup
 
 ROBOT_INFO_GROUP = SettingGroup("Robot Information", [
     SettingField("robot_ip",     "IP Address",   "line_edit",      default="192.168.58.2"),
