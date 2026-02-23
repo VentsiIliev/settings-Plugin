@@ -8,103 +8,6 @@ from src.settings.settings_view.styles import PRIMARY, PRIMARY_LIGHT
 from .menu_icon import MenuIcon
 
 
-class SettingsMenuItem(QFrame):
-    """Single clickable settings menu item with icon and label"""
-    clicked = pyqtSignal(str)
-
-    def __init__(self, setting_id: str, title: str, icon_name: str, description: str = "",
-                 compact: bool = False, parent=None):
-        super().__init__(parent)
-        self.setting_id = setting_id
-        self.title = title
-        self.is_compact = compact
-        self.is_selected = False
-
-        self.setFrameShape(QFrame.Shape.StyledPanel)
-        self.setFrameShadow(QFrame.Shadow.Raised)
-        self.setCursor(Qt.CursorShape.PointingHandCursor)
-
-        if compact:
-            self.setFixedSize(80, 90)
-        else:
-            self.setFixedSize(200, 180)
-
-        self._update_style()
-
-        layout = QVBoxLayout()
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.setSpacing(5 if compact else 10)
-
-        # Icon
-        icon = qta.icon(icon_name, color=PRIMARY)
-        icon_label = QLabel()
-        icon_size = 32 if compact else 64
-        icon_label.setPixmap(icon.pixmap(icon_size, icon_size))
-        icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(icon_label)
-
-        # Title
-        title_label = QLabel(title)
-        title_font = QFont()
-        if compact:
-            title_font.setPointSize(9)
-        else:
-            title_font.setPointSize(12)
-            title_font.setBold(True)
-        title_label.setFont(title_font)
-        title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title_label.setWordWrap(True)
-        layout.addWidget(title_label)
-
-        # Description (only in full mode)
-        if description and not compact:
-            desc_label = QLabel(description)
-            desc_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            desc_label.setWordWrap(True)
-            desc_label.setStyleSheet("color: #666; font-size: 10px;")
-            layout.addWidget(desc_label)
-
-        layout.addStretch()
-        self.setLayout(layout)
-
-    def set_selected(self, selected: bool):
-        """Mark this item as selected/active"""
-        self.is_selected = selected
-        self._update_style()
-
-    def _update_style(self):
-        """Update stylesheet based on selection state"""
-        if self.is_selected:
-            self.setStyleSheet(f"""
-                SettingsMenuItem {{
-                    background-color: {PRIMARY};
-                    border: 2px solid {PRIMARY};
-                    border-radius: 8px;
-                    padding: 5px;
-                }}
-                SettingsMenuItem QLabel {{
-                    color: white;
-                }}
-            """)
-        else:
-            self.setStyleSheet(f"""
-                SettingsMenuItem {{
-                    background-color: white;
-                    border: 2px solid #e0e0e0;
-                    border-radius: 8px;
-                    padding: 5px;
-                }}
-                SettingsMenuItem:hover {{
-                    background-color: {PRIMARY_LIGHT};
-                    border: 2px solid {PRIMARY};
-                }}
-            """)
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.clicked.emit(self.setting_id)
-        super().mousePressEvent(event)
-
 
 class SettingsMenu(QWidget):
     """
@@ -174,27 +77,16 @@ class SettingsMenu(QWidget):
             if self.compact_mode:
                 # Use MenuIcon for sidebar (Material Design)
                 item = MenuIcon(
-                    icon_label=category["id"],
-                    icon_path=category["icon"],
+                    icon_label=category.id,
+                    icon_path=category.icon,
                     icon_text="",
                     parent=self
                 )
                 item.set_material_size("compact")  # 80x80
-                item.button_clicked.connect(lambda label, cat_id=category["id"]: self._on_item_clicked(cat_id))
-                self.menu_items[category["id"]] = item
+                item.button_clicked.connect(lambda label, cat_id=category.id: self._on_item_clicked(cat_id))
+                self.menu_items[category.id] = item
                 row_layout.addWidget(item)
-            else:
-                # Use SettingsMenuItem for full-screen grid
-                item = SettingsMenuItem(
-                    setting_id=category["id"],
-                    title=category["title"],
-                    icon_name=category["icon"],
-                    description=category["description"],
-                    compact=self.compact_mode
-                )
-                item.clicked.connect(self._on_item_clicked)
-                self.menu_items[category["id"]] = item
-                row_layout.addWidget(item)
+
 
         # Add stretch to push items to top
         if row_layout and not self.compact_mode:
@@ -315,7 +207,7 @@ class SettingsNavigationWidget(QWidget):
         categories_to_use = self.categories or SettingsMenu._get_default_categories()
 
         for category in categories_to_use:
-            category_id = category["id"]
+            category_id = category.id
             if category_id in self.factory_map:
                 factory = self.factory_map[category_id]
                 try:

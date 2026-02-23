@@ -13,7 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from PyQt6.QtWidgets import QApplication, QMainWindow
-from src.settings.build_showcase import build_showcase
+from src.settings.settings_view.build_showcase import build_showcase
 
 
 def main():
