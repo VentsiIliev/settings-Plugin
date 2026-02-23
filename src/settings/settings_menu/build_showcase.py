@@ -1,3 +1,5 @@
+from src.glue_settings.view.glue_tab import glue_tab_factory
+from src.robot_settings.view.robot_tab import robot_tab_factory
 from src.settings.settings_menu.category_descriptor import CategoryDescriptor
 from src.settings.settings_menu.settings_menu import SettingsNavigationWidget
 from src.settings.settings_view.build_showcase import build_showcase
@@ -5,29 +7,19 @@ from src.settings.settings_view.build_showcase import build_showcase
 def build_settings_menu_showcase():
     CUSTOM_CATEGORIES = [
         CategoryDescriptor(
-            id = "users",
-            icon = "mdi.account-group"
+            id = "robot",
+            icon = "mdi.robot-industrial"
         ),
         CategoryDescriptor(
-            id = "database",
-            icon = "mdi.database"
-        ),
-        CategoryDescriptor(
-            id = "api",
-            icon = "mdi.api"
-        ),
-        CategoryDescriptor(
-            id = "backup",
-            icon = "mdi.backup-restore"
-        ),
-        CategoryDescriptor(
-            id = "logging",
-            icon = "mdi.text-box"
+            id = "glue",
+            icon = "fa6s.droplet"
         )
     ]
 
     # Define factory map - functions that create widgets for each category
     factory_map = {
+        "robot": lambda: robot_tab_factory()[0],
+        "glue": lambda: glue_tab_factory()[0],
         "users": build_showcase,
         "database": build_showcase,
         "api": build_showcase,

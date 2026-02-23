@@ -18,11 +18,6 @@ from src.settings.settings_menu.settings_menu import SettingsNavigationWidget
 from src.settings.settings_view.build_showcase import build_showcase
 
 
-
-
-
-
-
 def main():
     app = QApplication(sys.argv)
 
