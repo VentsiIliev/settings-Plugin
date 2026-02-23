@@ -8,6 +8,7 @@ from src.external_dependencies.robotConfig.SafetyLimits import SafetyLimits
 
 
 def get_default_config():
+
     """Get default configuration data"""
     movement_groups = {
         "LOGIN_POS": MovementGroup(
