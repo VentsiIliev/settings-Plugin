@@ -6,7 +6,7 @@ from typing import Any, List, Optional
 class SettingField:
     key: str           # signal key, unique across the tab
     label: str         # display text
-    widget_type: str   # 'spinbox' | 'double_spinbox' | 'line_edit' | 'combo'
+    widget_type: str   # 'spinbox' | 'double_spinbox' | 'line_edit' | 'combo' | 'toggle'
     default: Any = None
     min_val: float = 0
     max_val: float = 100

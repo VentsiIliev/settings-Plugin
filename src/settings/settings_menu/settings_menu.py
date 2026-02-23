@@ -140,7 +140,7 @@ class SettingsNavigationWidget(QWidget):
     tab_changing = pyqtSignal(str, str)  # old_tab_id, new_tab_id
     tab_changed = pyqtSignal(str, str)   # old_tab_id, new_tab_id
 
-    def __init__(self, categories=None, factory_map=None, parent=None):
+    def __init__(self, categories, factory_map, parent=None):
         super().__init__(parent)
         self.categories = categories
         self.factory_map = factory_map or {}

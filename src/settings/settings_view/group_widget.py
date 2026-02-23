@@ -1,50 +1,12 @@
 from PyQt6.QtWidgets import (
     QGroupBox, QGridLayout, QVBoxLayout, QWidget,
-    QLabel, QLineEdit, QComboBox, QSizePolicy
+    QLabel, QSizePolicy
 )
 from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtGui import QFont
 
 from src.settings.settings_view.schema import SettingGroup, SettingField
-from src.settings.settings_view.touch_spinbox import TouchSpinBox
-from src.settings.settings_view.int_list_widget import IntListWidget
-from src.settings.settings_view.styles import GROUP_STYLE, LABEL_STYLE, PRIMARY, PRIMARY_DARK, BORDER
-
-
-_COMBO_STYLE = f"""
-QComboBox {{
-    background: white;
-    color: #333333;
-    border: 2px solid {BORDER};
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 12pt;
-    min-height: 56px;
-}}
-QComboBox:hover {{ border-color: {PRIMARY}; }}
-QComboBox::drop-down {{ border: none; width: 40px; }}
-QComboBox QAbstractItemView {{
-    background: white;
-    color: #333333;
-    selection-background-color: rgba(122, 90, 248, 0.12);
-    selection-color: {PRIMARY_DARK};
-    font-size: 11pt;
-    padding: 8px;
-}}
-"""
-
-_LINE_EDIT_STYLE = f"""
-QLineEdit {{
-    background: white;
-    color: #333333;
-    border: 2px solid {BORDER};
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 12pt;
-    min-height: 56px;
-}}
-QLineEdit:focus {{ border-color: {PRIMARY}; }}
-"""
+from src.settings.settings_view.styles import GROUP_STYLE, LABEL_STYLE
+from src.settings.settings_view.widget_factory import get_handler, WidgetHandler
 
 
 class GenericSettingGroup(QGroupBox):
@@ -57,7 +19,7 @@ class GenericSettingGroup(QGroupBox):
         │ [  widget ] │  │ [  widget ] │
         └─────────────┘  └─────────────┘
 
-    Fields with widget_type="int_list" always span both columns.
+    Fields whose handler has full_width=True always span both columns.
 
     Signals:
         value_changed(key: str, value: object)
@@ -69,7 +31,8 @@ class GenericSettingGroup(QGroupBox):
         super().__init__(group.title, parent)
         self.setStyleSheet(GROUP_STYLE)
         self._group = group
-        self._widgets: dict = {}
+        self._widgets:  dict[str, QWidget]        = {}
+        self._handlers: dict[str, WidgetHandler]  = {}
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         self._build_ui()
 
@@ -87,6 +50,8 @@ class GenericSettingGroup(QGroupBox):
         row = 0
         col = 0
         for f in self._group.fields:
+            handler = get_handler(f.widget_type)
+
             cell = QWidget()
             cell.setStyleSheet("background: transparent;")
             cell_layout = QVBoxLayout(cell)
@@ -97,12 +62,14 @@ class GenericSettingGroup(QGroupBox):
             label.setStyleSheet(LABEL_STYLE)
             cell_layout.addWidget(label)
 
-            widget = self._create_widget(f)
+            emit = lambda val, k=f.key: self.value_changed.emit(k, val)
+            widget = handler.create(f, emit)
             cell_layout.addWidget(widget)
-            self._widgets[f.key] = widget
 
-            if f.widget_type == "int_list":
-                # Flush to start of row if needed, then span both columns
+            self._widgets[f.key]  = widget
+            self._handlers[f.key] = handler
+
+            if handler.full_width:
                 if col == 1:
                     row += 1
                 grid.addWidget(cell, row, 0, 1, 2)
@@ -118,92 +85,20 @@ class GenericSettingGroup(QGroupBox):
         outer.addLayout(grid)
         self.setLayout(outer)
 
-    def _create_widget(self, f: SettingField):
-        if f.widget_type == "combo":
-            w = QComboBox()
-            w.setStyleSheet(_COMBO_STYLE)
-            w.setFont(QFont("Arial", 12, QFont.Weight.Bold))
-            for choice in (f.choices or []):
-                w.addItem(str(choice))
-            if f.default is not None:
-                idx = w.findText(str(f.default))
-                if idx >= 0:
-                    w.setCurrentIndex(idx)
-            w.currentTextChanged.connect(lambda val, k=f.key: self.value_changed.emit(k, val))
-            return w
-
-        if f.widget_type == "line_edit":
-            w = QLineEdit()
-            w.setStyleSheet(_LINE_EDIT_STYLE)
-            if f.default is not None:
-                w.setText(str(f.default))
-            w.textChanged.connect(lambda text, k=f.key: self.value_changed.emit(k, text))
-            return w
-
-        if f.widget_type == "int_list":
-            w = IntListWidget(min_val=int(f.min_val), max_val=int(f.max_val))
-            if f.default is not None:
-                w.set_ids(str(f.default))
-            w.valueChanged.connect(lambda val, k=f.key: self.value_changed.emit(k, val))
-            return w
-
-        # spinbox / double_spinbox → TouchSpinBox
-        decimals = f.decimals if f.widget_type == "double_spinbox" else 0
-        w = TouchSpinBox(
-            min_val=f.min_val,
-            max_val=f.max_val,
-            initial=float(f.default) if f.default is not None else 0.0,
-            step=f.step,
-            decimals=decimals,
-            step_options=f.step_options,
-            suffix=f.suffix,
-        )
-        w.valueChanged.connect(lambda val, k=f.key: self.value_changed.emit(k, val))
-        return w
-
     # ── public API ────────────────────────────────────────────────────────────
 
-    def set_values(self, values: dict):
+    def set_values(self, values: dict) -> None:
         for key, widget in self._widgets.items():
             if key not in values:
                 continue
-            val = values[key]
-            if isinstance(widget, IntListWidget):
-                widget.blockSignals(True)
-                try:
-                    widget.set_ids(val)
-                finally:
-                    widget.blockSignals(False)
-            elif isinstance(widget, TouchSpinBox):
-                widget.blockSignals(True)
-                try:
-                    widget.setValue(float(val))
-                finally:
-                    widget.blockSignals(False)
-            elif isinstance(widget, QLineEdit):
-                widget.blockSignals(True)
-                try:
-                    widget.setText(str(val))
-                finally:
-                    widget.blockSignals(False)
-            elif isinstance(widget, QComboBox):
-                widget.blockSignals(True)
-                try:
-                    idx = widget.findText(str(val))
-                    if idx >= 0:
-                        widget.setCurrentIndex(idx)
-                finally:
-                    widget.blockSignals(False)
+            widget.blockSignals(True)
+            try:
+                self._handlers[key].set_value(widget, values[key])
+            finally:
+                widget.blockSignals(False)
 
     def get_values(self) -> dict:
-        result = {}
-        for key, widget in self._widgets.items():
-            if isinstance(widget, IntListWidget):
-                result[key] = widget.get_ids()
-            elif isinstance(widget, TouchSpinBox):
-                result[key] = widget.value()
-            elif isinstance(widget, QLineEdit):
-                result[key] = widget.text()
-            elif isinstance(widget, QComboBox):
-                result[key] = widget.currentText()
-        return result
+        return {
+            key: self._handlers[key].get_value(widget)
+            for key, widget in self._widgets.items()
+        }

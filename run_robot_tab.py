@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from PyQt6.QtWidgets import QApplication, QMainWindow
 
 from src.robot_settings.view.robot_tab import robot_tab_factory
-from src.robot_settings.view.mapper import RobotCalibrationMapper
+from src.robot_settings.mapper import RobotCalibrationMapper
 from src.external_dependencies.robotConfig.robotConfigModel import get_default_config
 from src.external_dependencies.robotConfig.robot_calibration_settings import RobotCalibrationSettings
 
