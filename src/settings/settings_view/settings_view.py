@@ -47,8 +47,12 @@ class SettingsView(QWidget):
         layout.addWidget(self._tabs)
         layout.addWidget(self._save_btn)
 
-    def add_tab(self, title: str, groups: List[SettingGroup]) -> None:
-        """Build a tab from a list of SettingGroup schemas and add it."""
+    def add_tab(self, title: str, groups: List[SettingGroup], footer: QWidget = None) -> None:
+        """Build a tab from a list of SettingGroup schemas and add it.
+
+        Args:
+            footer: Optional widget appended below the groups (e.g. an action button).
+        """
         content = QWidget()
         content.setStyleSheet(f"background: {BG_COLOR};")
         content_layout = QVBoxLayout(content)
@@ -62,6 +66,9 @@ class SettingsView(QWidget):
             )
             self._groups.append(widget)
             content_layout.addWidget(widget)
+
+        if footer is not None:
+            content_layout.addWidget(footer)
 
         content_layout.addStretch()
 

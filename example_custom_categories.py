@@ -23,7 +23,7 @@ def main():
 
     window = QMainWindow()
     window.setWindowTitle("Custom Settings Categories Example - Tab Change Notifications")
-    window.resize(1200, 800)
+    window.resize(1280, 1024)
 
 
 

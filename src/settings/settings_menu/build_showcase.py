@@ -1,3 +1,4 @@
+from src.camera_settings.view.camera_tab import camera_tab_factory
 from src.glue_settings.view.glue_tab import glue_tab_factory
 from src.robot_settings.view.robot_tab import robot_tab_factory
 from src.settings.settings_menu.category_descriptor import CategoryDescriptor
@@ -13,13 +14,18 @@ def build_settings_menu_showcase():
         CategoryDescriptor(
             id = "glue",
             icon = "fa6s.droplet"
-        )
+        ),
+        CategoryDescriptor(
+            id = "camera",
+            icon = "mdi.camera"
+        ),
     ]
 
     # Define factory map - functions that create widgets for each category
     factory_map = {
-        "robot": lambda: robot_tab_factory()[0],
-        "glue": lambda: glue_tab_factory()[0],
+        "robot":  lambda: robot_tab_factory()[0],
+        "glue":   lambda: glue_tab_factory()[0],
+        "camera": lambda: camera_tab_factory()[0],
         "users": build_showcase,
         "database": build_showcase,
         "api": build_showcase,

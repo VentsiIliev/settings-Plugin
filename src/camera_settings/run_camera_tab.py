@@ -3,6 +3,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+from PyQt6.QtGui import QPixmap, QColor
 from PyQt6.QtWidgets import QApplication, QMainWindow
 
 from src.camera_settings import CameraSettingsPlugin
@@ -60,9 +61,14 @@ def main():
     plugin = CameraSettingsPlugin(repo=_InMemoryRepo())
     plugin.load()
 
+    # White test frame so overlay drawing is visible
+    test_frame = QPixmap(1280, 720)
+    test_frame.fill(QColor("white"))
+    plugin.preview_label.set_frame(test_frame)
+
     win = QMainWindow()
     win.setWindowTitle("Camera Settings")
-    win.resize(1024, 768)
+    win.resize(1280, 1024)
     win.setCentralWidget(plugin.widget)
     win.show()
 
