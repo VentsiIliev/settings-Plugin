@@ -1,5 +1,5 @@
 """
-Runner: schema-driven RobotSettingsTab.
+Runner: schema-driven RobotSettingsTab using service pattern.
 
 Schema in → consistent UI out.
 Every widget change prints: [signal] key = value  (component)
@@ -11,34 +11,44 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from PyQt6.QtWidgets import QApplication, QMainWindow
 
-from src.robot_settings.view.robot_tab import robot_tab_factory
-from src.robot_settings.mapper import RobotCalibrationMapper
+from src.plugins.robot_settings import RobotSettingsPlugin
 from src.external_dependencies.robotConfig.robotConfigModel import get_default_config
 from src.external_dependencies.robotConfig.robot_calibration_settings import RobotCalibrationSettings
+
+
+class MockRobotSettingsService:
+    """Mock service for demonstration purposes."""
+
+    def __init__(self):
+        self._config = get_default_config()
+        self._calibration = RobotCalibrationSettings()
+
+    def load_config(self):
+        return self._config
+
+    def save_config(self, config):
+        self._config = config
+        print(f"[service] Config saved: {config.robot_ip}")
+
+    def load_calibration(self):
+        return self._calibration
+
+    def save_calibration(self, calibration):
+        self._calibration = calibration
+        print(f"[service] Calibration saved")
 
 
 def main():
     app = QApplication(sys.argv)
 
-    config = get_default_config()
-    calibration_settings = RobotCalibrationSettings()
-    view, movement_tab = robot_tab_factory()
-
-    view.load(config)
-    view.set_values(RobotCalibrationMapper.to_flat_dict(calibration_settings))
-    movement_tab.load(config.movement_groups)
-
-    view.value_changed_signal.connect(
-        lambda key, value, component: print(f"[signal]  {key} = {value!r}")
-    )
-    movement_tab.values_changed.connect(
-        lambda key, value: print(f"[movement] {key} = {value!r}")
-    )
+    service = MockRobotSettingsService()
+    plugin = RobotSettingsPlugin(service)
+    plugin.load()
 
     win = QMainWindow()
-    win.setWindowTitle("RobotSettingsTab — schema-driven")
+    win.setWindowTitle("RobotSettingsTab — schema-driven with service")
     win.resize(1280, 1024)
-    win.setCentralWidget(view)
+    win.setCentralWidget(plugin.widget)
     win.show()
 
     sys.exit(app.exec())

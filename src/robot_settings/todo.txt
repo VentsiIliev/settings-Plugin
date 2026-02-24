@@ -1,2 +1,0 @@
-add apply settings that will update the in memory values
-or add on value change persistence (apply and save)

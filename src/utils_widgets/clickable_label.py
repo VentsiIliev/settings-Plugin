@@ -78,7 +78,7 @@ class ClickableLabel(QLabel):
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.setMinimumSize(320, 240)
         self.setMouseTracking(True)
-        self.setStyleSheet("background: #12121F;")
+        # self.setStyleSheet("background: #12121F;")
 
         self._frame:        QPixmap | None                        = None
         self._areas:        Dict[str, List[Tuple[float, float]]] = {}

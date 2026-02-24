@@ -1,4 +1,4 @@
-PRIMARY       = "#905BA9"
+PRIMARY       = "#6750A4"
 PRIMARY_DARK  = "#5B3ED6"
 PRIMARY_LIGHT = "rgba(122, 90, 248, 0.10)"
 BG_COLOR      = "#F8F9FA"
