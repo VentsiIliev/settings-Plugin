@@ -230,6 +230,7 @@ class GlueTypeTab(QWidget):
         return self._table.item(items[0].row(), 0).text() if items else None
 
     def _on_selection_changed(self):
+        print(f"Selection changed: {self._selected_name()}")
         name = self._selected_name()
         is_custom = name is not None and name not in self.BUILTIN_TYPES
         self._btn_edit.setEnabled(is_custom)
@@ -262,6 +263,7 @@ class GlueTypeTab(QWidget):
         self._show_form("Add Custom Glue Type")
 
     def _start_edit(self):
+        print(f"Edit: {self._selected_name()}")
         name = self._selected_name()
         gt = next((t for t in self._custom_types if t.name == name), None)
         if gt is None:

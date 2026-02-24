@@ -28,11 +28,17 @@ class BaseSettingsPlugin(Generic[TService, TModel, TController, TView]):
     """
 
     def __init__(self, service: TService):
+        """
+        Initialize the plugin with dependency injection.
+
+        Args:
+            service: The service that handles data persistence
+        """
         self._service = service
         self._model: TModel = self._create_model(service)
-        view_result = self._create_view()
-        self._view: TView = self._extract_main_widget(view_result)
+        self._view: TView = self._create_view()
         self._controller: TController = self._create_controller(self._model, self._view)
+        self._widget: QWidget = self._extract_main_widget(self._view)
 
     # ── Abstract Methods ─────────────────────────────────────────────────────────
 
@@ -58,7 +64,7 @@ class BaseSettingsPlugin(Generic[TService, TModel, TController, TView]):
     @property
     def widget(self) -> TView:
         """Returns the main QWidget for this settings plugin."""
-        return self._view
+        return self._widget
 
     def load(self) -> None:
         """Load data from model/service into the UI via controller."""
